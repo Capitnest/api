@@ -5,6 +5,8 @@ from flask_limiter.util import get_remote_address
 import json
 import time
 
+from functions.gumroad import validate_license_gumroad
+
 app = Flask(__name__)
 limiter = Limiter(app, key_func=get_remote_address)
 
@@ -61,6 +63,15 @@ def feeds_ethereum():
     f = open('posts/ethereum.json', 'r')
     data = json.load(f)
     return jsonify(data)
+
+@app.route('/validate-license', methods = ['GET', 'POST'])
+@limiter.limit('5 per minute')
+def validate_license():
+
+    license = str(request.args.get('license')) # ?input= a
+    uid = str(request.args.get('uid'))
+
+    return jsonify(validate_license_gumroad(license=license, uid=uid))
 
 if __name__ == "__main__":
     app.run(debug=True)
