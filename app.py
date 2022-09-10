@@ -11,18 +11,18 @@ app = Flask(__name__)
 limiter = Limiter(app, key_func=get_remote_address)
 
 @app.route('/')
-@limiter.limit('3 per minute')
+@limiter.limit('2 per minute')
 def main():
-    return "<h1>Heelo</h1>"
+    return "Capitnest API is live!"
 
-@app.route('/test', methods = ['GET', 'POST'])
-def handle_request():
-    text = str(request.args.get('input')) # ?input= a
-    character_count = len(text)
+# @app.route('/test', methods = ['GET', 'POST'])
+# def handle_request():
+#     text = str(request.args.get('input')) # ?input= a
+#     character_count = len(text)
 
-    data_set = {'input': text, 'timestamp': time.time(), 'character_count': character_count}
-    json_dump = json.dumps(data_set)
-    return json_dump
+#     data_set = {'input': text, 'timestamp': time.time(), 'character_count': character_count}
+#     json_dump = json.dumps(data_set)
+#     return json_dump
 
 @app.route('/feeds/general', methods = ['GET'])
 @limiter.limit('50 per minute')
