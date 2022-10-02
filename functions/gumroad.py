@@ -8,16 +8,7 @@ import sys
 sys.path.append('./..')
 from config import *
 
-cred = credentials.Certificate("service.json")
-firebase_admin.initialize_app(cred, {
-  "apiKey": firebase_apiKey,
-  "authDomain": firebase_authDomain,
-  "databaseURL": firebase_databaseURL,
-  "projectId": firebase_projectId,
-  "storageBucket": firebase_storageBucket,
-  "messagingSenderId": firebase_messagingSenderId,
-  "appId": firebase_appId
-})
+
 
 gumroad_token = gumroad_access_token
 
