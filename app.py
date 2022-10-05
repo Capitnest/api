@@ -1,6 +1,7 @@
 from flask import Flask, jsonify
 from flask import request
 from flask_limiter import Limiter
+from flask_cors import CORS, cross_origin
 from flask_limiter.util import get_remote_address
 import json
 import time
@@ -26,23 +27,17 @@ firebase_admin.initialize_app(cred, {
 })
 
 app = Flask(__name__)
+CORS(app)
 limiter = Limiter(app, key_func=get_remote_address)
 
 @app.route('/')
+@cross_origin()
 @limiter.limit('2 per minute')
 def main():
     return "Capitnest API is live!"
 
-# @app.route('/test', methods = ['GET', 'POST'])
-# def handle_request():
-#     text = str(request.args.get('input')) # ?input= a
-#     character_count = len(text)
-
-#     data_set = {'input': text, 'timestamp': time.time(), 'character_count': character_count}
-#     json_dump = json.dumps(data_set)
-#     return json_dump
-
 @app.route('/feeds/general', methods = ['GET'])
+@cross_origin()
 @limiter.limit('50 per minute')
 def feeds_general():
 
@@ -50,46 +45,35 @@ def feeds_general():
     data = json.load(f)
     return jsonify(data) 
 
-@app.route('/feeds/bitcoin', methods = ['GET'])
-@limiter.limit('50 per minute')
-def feeds_bitcoin():
-
-    f = open('posts/bitcoin.json', 'r')
-    data = json.load(f)
-    return jsonify(data)
-
-@app.route('/feeds/solana', methods = ['GET'])
-@limiter.limit('50 per minute')
-def feeds_solana():
-
-    f = open('posts/solana.json', 'r')
-    data = json.load(f)
-    return jsonify(data)
-
-@app.route('/feeds/cardano', methods = ['GET'])
-@limiter.limit('50 per minute')
-def feeds_cardano():
-
-    f = open('posts/cardano.json', 'r')
-    data = json.load(f)
-    return jsonify(data)
-
-@app.route('/feeds/ethereum', methods = ['GET'])
-@limiter.limit('50 per minute')
-def feeds_ethereum():
-
-    f = open('posts/ethereum.json', 'r')
-    data = json.load(f)
-    return jsonify(data)
-
 @app.route('/get-plan', methods = ['GET', 'POST'])
-@limiter.limit('5 per minute')
+@cross_origin()
+@limiter.limit('50 per minute')
 def get_plan():
     uid = str(request.args.get('uid'))
 
+    print(getPlan(uid))
+
     return getPlan(uid)
 
+@app.route('/feeds', methods = ['GET', 'POST'])
+@cross_origin()
+@limiter.limit('50 per minute')
+def feeds():
+
+    category = str(request.args.get('category')) # ?input= a
+    date = str(request.args.get('date'))
+
+    if(date == "general"):
+        f = open(f'posts/{category}.json', 'r')
+    else:
+        f = open(f'posts/{category}_{date}.json', 'r')
+
+    data = json.load(f)
+    return jsonify(data)
+
+
 @app.route('/validate-license', methods = ['GET', 'POST'])
+@cross_origin()
 @limiter.limit('5 per minute')
 def validate_license():
 
